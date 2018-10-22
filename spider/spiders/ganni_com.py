@@ -64,5 +64,5 @@ class GanniComSpider(scrapy.Spider):
             'sku': sku,
             'title': title,
             'color': color,
-            'images': images
+            'image_urls': images
         }
