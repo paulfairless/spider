@@ -28,7 +28,7 @@ class FirestorePipeline(object):
     def open_spider(self, spider):
         # print (self.creds)
         credentials = service_account.Credentials.from_service_account_info(info=self.creds)
-        print credentials
+        print (credentials)
         self.db = firestore.Client(project='modum-e2bbb', credentials=credentials)
         # pymongo.MongoClient(self.mongo_uri)
         # self.db = self.client[self.mongo_db]
