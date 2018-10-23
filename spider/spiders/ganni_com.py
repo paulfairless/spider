@@ -51,8 +51,11 @@ class GanniComSpider(scrapy.Spider):
     
     def parseProduct(self, response):
         sku = response.css("input[id='pid']::attr(value)").extract_first()
+        if sku is not None: sku=sku.strip()
         title = response.css("meta[itemprop='name']::attr(content)").extract_first()
+        if title is not None: title=title.strip()
         color = response.css("ul.swatches li.selected a::text").extract_first()
+        if color is not None: color=color.strip()
         images = response.css(".imagecarousel img::attr(src)").extract()
 
         yield {

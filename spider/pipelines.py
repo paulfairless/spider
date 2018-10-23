@@ -23,12 +23,12 @@ class FirestorePipeline(object):
     def from_crawler(cls, crawler):
         return cls(
             creds=json.loads(crawler.settings.get('FIREBASE')),
+            # creds=crawler.settings.get('FIREBASE'),
         )
 
     def open_spider(self, spider):
         # print (self.creds)
         credentials = service_account.Credentials.from_service_account_info(info=self.creds)
-        print (credentials)
         self.db = firestore.Client(project='modum-e2bbb', credentials=credentials)
         # pymongo.MongoClient(self.mongo_uri)
         # self.db = self.client[self.mongo_db]
@@ -38,7 +38,11 @@ class FirestorePipeline(object):
 
     def process_item(self, item, spider):
         product = dict(item)
-        docRef = self.db.collection(self.collection_name).document(product['store']+'_'+product['sku'])
-        docRef.set(product)
-        # self.db[self.collection_name].document(dict(item))
+        if product['sku']:
+            key = (product['store']+'_'+product['sku']).lower().replace(' ', '')
+            docRef = self.db.collection(self.collection_name).document(key)
+            docRef.set(product)
+            # self.db[self.collection_name].document(dict(item))
+        else:
+            raise DropItem('Missing Sku')
         return item
