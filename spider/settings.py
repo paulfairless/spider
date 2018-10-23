@@ -79,7 +79,7 @@ AUTOTHROTTLE_ENABLED = True
 #AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
-AUTOTHROTTLE_TARGET_CONCURRENCY = 0.5
+AUTOTHROTTLE_TARGET_CONCURRENCY = 1
 # Enable showing throttling stats for every response received:
 #AUTOTHROTTLE_DEBUG = False
 
@@ -90,6 +90,10 @@ AUTOTHROTTLE_TARGET_CONCURRENCY = 0.5
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
 IMAGES_STORE_S3_ACL = 'public-read'
 IMAGES_STORE = 's3://modum-image/download/'
 IMAGES_RESULT_FIELD = 'images'
+IMAGES_THUMBS = {
+    'feed': (300, 370),
+}

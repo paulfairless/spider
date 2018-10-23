@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
+from re import sub
+from decimal import Decimal
 
 
 class GanniComSpider(scrapy.Spider):
@@ -15,6 +17,19 @@ class GanniComSpider(scrapy.Spider):
         baseAjaxUrl = 'https://www.ganni.com/en'
         entries = [
             { 'url': '/coats-and-jackets/', 'type': 'coats-and-jackets', 'department':'women' },
+            { 'url': '/dresses/', 'type': 'dresses', 'department':'women' },
+            { 'url': '/denim/', 'type': 'denim', 'department':'women' },
+            { 'url': '/tops-and-t-shirts/', 'type': 'tops', 'department':'women' },
+            { 'url': '/shirts-and-blouses/', 'type': 'shirts', 'department':'women' },
+            { 'url': '/knitwear/', 'type': 'knitwear', 'department':'women' },
+            { 'url': '/skirts/', 'type': 'skirts', 'department':'women' },
+            { 'url': '/trousers/', 'type': 'trousers', 'department':'women' },
+            { 'url': '/shorts/', 'type': 'shorts', 'department':'women' },
+            { 'url': '/sweatshirts/', 'type': 'sweatshirts', 'department':'women' },
+            { 'url': '/lingerie/', 'type': 'lingerie', 'department':'women' },
+            { 'url': '/swimwear/', 'type': 'swimwear', 'department':'women' },
+            { 'url': '/shoes/', 'type': 'shoes', 'department':'women' },
+            { 'url': '/bags/', 'type': 'bags', 'department':'women' },
         ]
         for entry in entries:
             url = baseAjaxUrl + entry['url']
@@ -51,12 +66,23 @@ class GanniComSpider(scrapy.Spider):
     
     def parseProduct(self, response):
         sku = response.css("input[id='pid']::attr(value)").extract_first()
-        if sku is not None: sku=sku.strip()
+        if sku is not None: sku=sku.strip().lower()
         title = response.css("meta[itemprop='name']::attr(content)").extract_first()
         if title is not None: title=title.strip()
         color = response.css("ul.swatches li.selected a::text").extract_first()
-        if color is not None: color=color.strip()
+        if color is not None: color=color.strip().lower()
         images = response.css(".imagecarousel img::attr(src)").extract()
+        price = response.css(".product-price .price-sales::text").extract_first()
+        if price is not None: price=float(sub(r'[^\d.]', '', price))
+        rrp = response.css(".product-price .price-standard::text").extract_first()
+        if rrp is not None: 
+            rrp=float(sub(r'[^\d.]', '', rrp))
+        else:
+            rrp = price
+        
+        sale = False
+        if rrp > price:
+            sale = True
 
         yield {
             'brand': 'ganni',
@@ -67,5 +93,8 @@ class GanniComSpider(scrapy.Spider):
             'sku': sku,
             'title': title,
             'color': color,
+            'price': price,
+            'rrp': rrp,
+            'sale': sale,
             'image_urls': images
         }
